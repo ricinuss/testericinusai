@@ -3,6 +3,11 @@
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
 const API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
+
+// URL do proxy Vercel — substitua pelo seu domínio após o deploy
+// Ex: 'https://ricinus-proxy.vercel.app/api/nvidia'
+const NVIDIA_PROXY_URL = 'https://ricinusaiproxy.vercel.app/api/nvidia';
+
 const MIN_KEY_LEN = 30;
 const MAX_CONTEXT_TOKENS = 800_000;
 
@@ -219,10 +224,10 @@ async function callAPI(messages) {
     const startIdx = S.currentKeyIdx % validKeys.length;
     const errors = [];
 
-    // Se for NVIDIA, usa o endpoint integrate.api.nvidia.com e envia Authorization header
+    // Se for NVIDIA, roteia pelo proxy Vercel (evita CORS do browser)
     if (isNvidia) {
         const providerModel = NVIDIA_MODEL_MAP[S.model] || S.model;
-        const invokeUrl = 'https://integrate.api.nvidia.com/v1/chat/completions';
+        const invokeUrl = NVIDIA_PROXY_URL;
 
         // Monta messages no formato esperado (simplificado)
         const nvidiaMessages = truncatedMessages.map(m => ({ role: m.role, content: m.content }));
@@ -237,11 +242,11 @@ async function callAPI(messages) {
         };
         if (S.thinking) nvidiaPayloadBase.chat_template_kwargs = { thinking: true };
 
-        for (let tried = 0; tried < validKeys.length; tried++) {
-            const keyIdx = (startIdx + tried) % validKeys.length;
-            const key = validKeys[keyIdx];
-
-            aborter = new AbortController();
+        // O proxy cuida do round-robin das chaves — só precisamos de uma tentativa aqui
+        aborter = new AbortController();
+        for (let tried = 0; tried < 1; tried++) {
+            const keyIdx = startIdx;
+            const key = validKeys[keyIdx]; // enviado apenas como fallback; proxy usa env vars
 
             let res;
             try {
@@ -250,7 +255,6 @@ async function callAPI(messages) {
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': S.streaming ? 'text/event-stream' : 'application/json',
-                        'Authorization': `Bearer ${key}`
                     },
                     body: JSON.stringify(nvidiaPayloadBase),
                     signal: aborter.signal
@@ -371,12 +375,10 @@ async function validateKeysOnLoad() {
     try {
         let res;
         if (testKey.startsWith('nvapi-')) {
-            res = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+            // Valida via proxy para evitar CORS
+            res = await fetch(NVIDIA_PROXY_URL, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${testKey}`
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     model: 'moonshotai/kimi-k2.6',
                     messages: [{ role: 'user', content: 'hi' }],

@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="RicinusAI — assistente de inteligência artificial">
+    <meta name="theme-color" content="#0f0f13">
+    <meta name="color-scheme" content="dark light">
+
+    <title>RicinusAI</title>
+
+    <!-- Favicon SVG inline -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%238b5cf6'/><circle cx='50' cy='38' r='16' fill='%23fff'/><path d='M24 75c0-15 12-26 26-26s26 11 26 26' fill='%23fff'/></svg>">
+
+    <!-- CSS — ordem importa: themes primeiro, utils por último -->
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/chat.css">
+    <link rel="stylesheet" href="css/input.css">
+    <link rel="stylesheet" href="css/modal.css">
+    <link rel="stylesheet" href="css/utils.css">
+</head>
+
+<body>
+
+<!-- ── Overlays globais ─────────────────────────────────────────────────────── -->
+<div class="s-overlay"   id="sOverlay"   aria-hidden="true"></div>
+
+<div class="drop-overlay" id="dropOverlay" aria-hidden="true">
+    <div class="drop-box">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>
+        </svg>
+        Solte a imagem aqui
+    </div>
+</div>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Visualizar imagem">
+    <img id="lbImg" src="" alt="Imagem em tamanho real">
+</div>
+
+<!-- ── Sidebar ──────────────────────────────────────────────────────────────── -->
+<aside class="sidebar hide" id="sidebar" aria-label="Histórico de chats">
+
+    <div class="s-head">
+        <div class="s-brand" aria-label="RicinusAI">
+            <div class="s-brand-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                     stroke="white" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2a5 5 0 015 5v1a5 5 0 01-10 0V7a5 5 0 015-5z"/>
+                    <path d="M19 21v-2a5 5 0 00-5-5h-4a5 5 0 00-5 5v2"/>
+                </svg>
+            </div>
+            <span class="s-brand-text">RicinusAI</span>
+        </div>
+
+        <button class="btn-new" id="btnNew" title="Novo chat (Ctrl+Shift+N)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5"  y1="12" x2="19" y2="12"/>
+            </svg>
+            Novo Chat
+        </button>
+    </div>
+
+    <div class="s-search" role="search">
+        <svg class="s-search-icon" width="12" height="12" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="search" id="searchChats"
+               placeholder="Buscar chats…"
+               autocomplete="off"
+               aria-label="Buscar nos chats">
+    </div>
+
+    <div class="s-list" id="sList" role="list" aria-label="Lista de chats"></div>
+
+    <div class="s-foot">
+        <button class="s-foot-btn" id="btnImport" title="Importar chats">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            Importar
+        </button>
+
+        <button class="s-foot-btn" id="btnExport" title="Exportar chats">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Exportar
+        </button>
+
+        <button class="s-foot-btn" id="btnClear" title="Apagar todos os chats">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+            </svg>
+            Limpar Tudo
+        </button>
+
+        <button class="s-foot-btn" id="btnOpenSet" title="Configurações">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.73 12.73l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+            </svg>
+            Configurações
+        </button>
+    </div>
+
+</aside>
+
+<!-- ── Main ─────────────────────────────────────────────────────────────────── -->
+<main class="main" id="main">
+
+    <header class="m-head">
+        <div class="m-head-l">
+            <button class="icon-btn" id="btnMenu"
+                    title="Alternar sidebar (Ctrl+/)"
+                    aria-label="Alternar sidebar"
+                    aria-controls="sidebar"
+                    aria-expanded="false">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <line x1="3"  y1="6"  x2="21" y2="6"/>
+                    <line x1="3"  y1="12" x2="21" y2="12"/>
+                    <line x1="3"  y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+
+            <div class="sel-wrap">
+                <select id="selModel" aria-label="Selecionar modelo">
+                    <option value="ricinus 1.5 lucid">Ricinus 1.5 Lucid</option>
+                    <option value="ricinus 1.5 thinking">Ricinus 1.5 Thinking</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="m-head-r">
+            <button class="icon-btn" id="btnScrollBottom"
+                    title="Ir para o fim"
+                    aria-label="Rolar para o fim"
+                    style="display:none">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <polyline points="6 9 12 15 18 9"/>
+                </svg>
+            </button>
+
+            <!-- Badge oculto — mantido para compatibilidade com JS -->
+            <span class="badge on" id="badge" style="display:none" aria-hidden="true">
+                <span class="badge-dot"></span>
+                <span id="badgeTxt">Sem chave</span>
+            </span>
+        </div>
+    </header>
+
+    <!-- Área de mensagens -->
+    <div class="chat-wrap" id="chatWrap" role="log" aria-live="polite" aria-label="Conversa">
+        <div class="chat-msgs" id="chatMsgs"></div>
+    </div>
+
+    <!-- Área de input -->
+    <div class="input-area" role="region" aria-label="Campo de mensagem">
+        <div class="input-wrap">
+
+            <div class="attach-preview" id="attachPreview"
+                 style="display:none"
+                 aria-label="Imagens anexadas"
+                 aria-live="polite"></div>
+
+            <div class="input-box">
+                <div class="input-attach">
+                    <button class="btn-attach" id="btnAttach"
+                            title="Anexar imagem"
+                            aria-label="Anexar imagem">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>
+                        </svg>
+                    </button>
+                    <input type="file" id="fileInput"
+                           accept="image/*"
+                           multiple
+                           aria-label="Selecionar imagens"
+                           style="display:none">
+                </div>
+
+                <textarea id="inp"
+                          placeholder="Envie uma mensagem…"
+                          rows="1"
+                          autocomplete="off"
+                          autocorrect="on"
+                          spellcheck="true"
+                          aria-label="Mensagem"
+                          aria-multiline="true"></textarea>
+
+                <button class="btn-send" id="btnSend"
+                        disabled
+                        title="Enviar (Enter)"
+                        aria-label="Enviar mensagem">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <line x1="22" y1="2" x2="11" y2="13"/>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="input-foot" aria-hidden="true">
+                <span>RicinusAI pode cometer erros. Verifique informações importantes.</span>
+                <span class="char-count" id="charCount" aria-live="polite"></span>
+            </div>
+
+        </div>
+    </div>
+
+</main>
+
+<!-- ── Modal de configurações ───────────────────────────────────────────────── -->
+<div class="modal-bg" id="setModal"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="setModalTitle">
+
+    <div class="modal">
+        <div class="m-hd">
+            <h2 id="setModalTitle">Configurações</h2>
+            <button class="m-cls" id="btnClsSet" aria-label="Fechar configurações">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <line x1="18" y1="6"  x2="6"  y2="18"/>
+                    <line x1="6"  y1="6"  x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="m-body">
+
+            <!-- Tema -->
+            <div class="sg">
+                <label class="sg-label">Tema</label>
+                <div class="theme-grid" id="themeGrid" role="radiogroup" aria-label="Escolher tema">
+                    <div class="theme-opt" data-theme="dark"     role="radio" tabindex="0"><span class="theme-dot" style="background:#8b5cf6"></span>Dark</div>
+                    <div class="theme-opt" data-theme="midnight" role="radio" tabindex="0"><span class="theme-dot" style="background:#6366f1"></span>Midnight</div>
+                    <div class="theme-opt" data-theme="forest"   role="radio" tabindex="0"><span class="theme-dot" style="background:#34d399"></span>Forest</div>
+                    <div class="theme-opt" data-theme="sunset"   role="radio" tabindex="0"><span class="theme-dot" style="background:#f472b6"></span>Sunset</div>
+                    <div class="theme-opt" data-theme="ocean"    role="radio" tabindex="0"><span class="theme-dot" style="background:#38bdf8"></span>Ocean</div>
+                    <div class="theme-opt" data-theme="lavender" role="radio" tabindex="0"><span class="theme-dot" style="background:#a78bfa"></span>Lavender</div>
+                    <div class="theme-opt" data-theme="light"    role="radio" tabindex="0"><span class="theme-dot" style="background:#7c3aed"></span>Light</div>
+                </div>
+            </div>
+
+            <!-- Avatar -->
+            <div class="sg">
+                <label class="sg-label">Avatar</label>
+                <div class="avatar-row">
+                    <div id="avatarPreview"
+                         class="avatar-preview"
+                         aria-label="Preview do avatar">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                            <circle cx="12" cy="8" r="4"/>
+                            <path d="M5.5 21c0-4.14 2.91-7.5 6.5-7.5s6.5 3.36 6.5 7.5"/>
+                        </svg>
+                    </div>
+                    <div class="avatar-btns">
+                        <button class="btn-add-key" id="btnChangeAvatar">📷 Alterar foto</button>
+                        <button class="btn-add-key" id="btnRemoveAvatar">🗑️ Remover</button>
+                    </div>
+                </div>
+                <input type="file" id="avatarInput" accept="image/*"
+                       aria-label="Selecionar foto de avatar"
+                       style="display:none">
+            </div>
+
+            <!-- Chaves API (oculto por padrão) -->
+            <div class="sg" style="display:none" aria-hidden="true">
+                <label class="sg-label">Chaves API</label>
+                <p class="sg-desc">
+                    Obtenha em
+                    <a href="https://aistudio.google.com/app/apikey"
+                       target="_blank" rel="noopener noreferrer">Google AI Studio</a>
+                </p>
+                <div class="api-mode-grid" role="radiogroup" aria-label="Modo de API">
+                    <div class="api-mode-opt active" id="apiModeDefault" role="radio" tabindex="0">
+                        <span class="api-mode-icon" aria-hidden="true">🔒</span>
+                        <span class="api-mode-name">Padrão</span>
+                        <span class="api-mode-desc">Chaves do sistema</span>
+                    </div>
+                    <div class="api-mode-opt" id="apiModeCustom" role="radio" tabindex="0">
+                        <span class="api-mode-icon" aria-hidden="true">✏️</span>
+                        <span class="api-mode-name">Personalizada</span>
+                        <span class="api-mode-desc">Sua própria chave</span>
+                    </div>
+                </div>
+                <div id="customKeysSection" style="display:none; flex-direction:column; gap:6px; margin-top:4px">
+                    <div class="keys-list" id="keysList" aria-label="Lista de chaves"></div>
+                    <button class="btn-add-key" id="btnAddKey">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5"  y1="12" x2="19" y2="12"/>
+                        </svg>
+                        Adicionar chave
+                    </button>
+                </div>
+            </div>
+
+            <!-- System Prompt -->
+            <div class="sg">
+                <label class="sg-label" for="sysInp">System Prompt</label>
+                <textarea class="sg-input" id="sysInp" rows="3"
+                          placeholder="Ex: Você é um assistente prestativo…"
+                          aria-describedby="sysInpHint"></textarea>
+                <p class="sg-desc" id="sysInpHint">Instrução persistente enviada ao modelo em todas as mensagens.</p>
+            </div>
+
+            <!-- Fonte -->
+            <div class="sg">
+                <label class="sg-label" for="fontSl">Tamanho da Fonte</label>
+                <div class="sg-row">
+                    <div class="sg-slider">
+                        <input type="range" class="sl-track" id="fontSl"
+                               min="11" max="20" step="1" value="14"
+                               aria-valuemin="11" aria-valuemax="20" aria-valuenow="14">
+                    </div>
+                    <span class="sl-val" id="fontV" aria-live="polite">14px</span>
+                </div>
+            </div>
+
+            <!-- Temperatura -->
+            <div class="sg">
+                <label class="sg-label" for="tempSl">Temperatura</label>
+                <p class="sg-desc" id="tempDesc">0 = preciso, 2 = criativo</p>
+                <div class="sg-row">
+                    <div class="sg-slider">
+                        <input type="range" class="sl-track" id="tempSl"
+                               min="0" max="2" step="0.1" value="1"
+                               aria-describedby="tempDesc"
+                               aria-valuemin="0" aria-valuemax="2" aria-valuenow="1">
+                    </div>
+                    <span class="sl-val" id="tempV" aria-live="polite">1.0</span>
+                </div>
+            </div>
+
+            <!-- Tokens -->
+            <div class="sg">
+                <label class="sg-label" for="tokSl">Máximo de Tokens</label>
+                <div class="sg-row">
+                    <div class="sg-slider">
+                        <input type="range" class="sl-track" id="tokSl"
+                               min="256" max="65536" step="256" value="8192"
+                               aria-valuemin="256" aria-valuemax="65536" aria-valuenow="8192">
+                    </div>
+                    <span class="sl-val" id="tokV" aria-live="polite">8192</span>
+                </div>
+            </div>
+
+            <!-- Top P -->
+            <div class="sg">
+                <label class="sg-label" for="topSl">Top P</label>
+                <div class="sg-row">
+                    <div class="sg-slider">
+                        <input type="range" class="sl-track" id="topSl"
+                               min="0" max="1" step="0.05" value="0.95"
+                               aria-valuemin="0" aria-valuemax="1" aria-valuenow="0.95">
+                    </div>
+                    <span class="sl-val" id="topV" aria-live="polite">0.95</span>
+                </div>
+            </div>
+
+            <!-- Chain of Thought -->
+            <div class="sg">
+                <div class="sg-row">
+                    <div>
+                        <label class="sg-label" for="thinkTog">Chain of Thought</label>
+                        <p class="sg-desc">Raciocínio interno da IA</p>
+                    </div>
+                    <label class="toggle" aria-label="Ativar Chain of Thought">
+                        <input type="checkbox" id="thinkTog" checked>
+                        <span></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Budget de Pensamento -->
+            <div class="sg" id="thinkBudgetGrp">
+                <label class="sg-label" for="thinkSl">Budget de Pensamento</label>
+                <div class="sg-row">
+                    <div class="sg-slider">
+                        <input type="range" class="sl-track" id="thinkSl"
+                               min="1024" max="32768" step="1024" value="8192"
+                               aria-valuemin="1024" aria-valuemax="32768" aria-valuenow="8192">
+                    </div>
+                    <span class="sl-val" id="thinkV" aria-live="polite">8192</span>
+                </div>
+            </div>
+
+            <!-- Streaming -->
+            <div class="sg">
+                <div class="sg-row">
+                    <div>
+                        <label class="sg-label" for="streamTog">Streaming</label>
+                        <p class="sg-desc">Resposta em tempo real</p>
+                    </div>
+                    <label class="toggle" aria-label="Ativar streaming">
+                        <input type="checkbox" id="streamTog" checked>
+                        <span></span>
+                    </label>
+                </div>
+            </div>
+
+        </div><!-- /.m-body -->
+
+        <div class="m-ft">
+            <button class="m-btn m-btn-d" id="btnReset">Resetar</button>
+            <button class="m-btn m-btn-s" id="btnCancel">Cancelar</button>
+            <button class="m-btn m-btn-p" id="btnSave">Salvar</button>
+        </div>
+    </div><!-- /.modal -->
+
+</div><!-- /#setModal -->
+
+<!-- Toast container -->
+<div class="toast-box" id="toasts" aria-live="assertive" aria-atomic="false" role="status"></div>
+
+<!-- Scripts — ordem de dependência: state → utils → api → chat → render → send → ui → settings → files → app -->
+<script src="js/state.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/dialog.js"></script>
+<script src="js/stream-renderer.js"></script>
+<script src="js/api.js"></script>
+<script src="js/chat.js"></script>
+<script src="js/render.js"></script>
+<script src="js/send.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/files.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>

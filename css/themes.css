@@ -1,0 +1,364 @@
+/* ═══════════ DESIGN TOKENS GLOBAIS ═══════════
+   Variáveis compartilhadas por todos os temas.
+   Sobrepostas individualmente por cada [data-theme].
+   ══════════════════════════════════════════════ */
+
+:root {
+    /* Transição de tema — aplicada ao root para animar troca */
+    --theme-transition:
+        background-color .25s cubic-bezier(.22, 1, .36, 1),
+        color            .25s cubic-bezier(.22, 1, .36, 1),
+        border-color     .2s  cubic-bezier(.22, 1, .36, 1),
+        box-shadow       .2s  cubic-bezier(.22, 1, .36, 1);
+
+    /* Tamanho de fonte base do chat — sobrescrito via JS */
+    --font-size-chat: 14px;
+
+    /* Z-index scale — evita magic numbers nos CSS filhos */
+    --z-sidebar:  100;
+    --z-overlay:   90;
+    --z-drop:     500;
+    --z-modal:   1000;
+    --z-lightbox: 3000;
+
+    /* Raios de borda consistentes */
+    --radius-sm:  4px;
+    --radius-md:  8px;
+    --radius-lg: 14px;
+    --radius-xl: 16px;
+
+    /* Timing de animações reutilizável */
+    --ease-spring:  cubic-bezier(.34, 1.56, .64, 1);
+    --ease-out:     cubic-bezier(.22, 1, .36, 1);
+    --ease-in-out:  cubic-bezier(.4, 0, .6, 1);
+
+    --duration-fast:   .12s;
+    --duration-normal: .22s;
+    --duration-slow:   .35s;
+}
+
+/* Ativa transição de troca de tema em todos os elementos */
+*, *::before, *::after {
+    transition: var(--theme-transition);
+}
+
+/* Remove transição de elementos que não devem animar (evita flash em inputs) */
+input[type="range"],
+input[type="range"]::-webkit-slider-thumb,
+textarea,
+select,
+code, pre {
+    transition:
+        border-color     .15s var(--ease-out),
+        box-shadow       .15s var(--ease-out),
+        background-color .15s var(--ease-out);
+}
+
+/* ═══════════ DARK (padrão) ═══════════ */
+[data-theme="dark"] {
+    color-scheme: dark;
+
+    --bg-1:     #09090b;
+    --bg-2:     #111113;
+    --bg-3:     #1a1a1f;
+    --bg-4:     #222228;
+    --bg-hover: #2a2a32;
+
+    --border:   #27272a;
+    --border-l: #3f3f46;
+
+    --tx-1: #f4f4f5;
+    --tx-2: #a1a1aa;
+    --tx-3: #71717a;
+
+    --accent:   #8b5cf6;
+    --accent-h: #7c3aed;
+    --accent-g: rgba(139, 92, 246, .25);
+    --accent-s: rgba(139, 92, 246, .08);
+
+    --green:  #10b981;
+    --red:    #ef4444;
+    --yellow: #f59e0b;
+    --blue:   #3b82f6;
+
+    /* Sombras específicas do tema escuro */
+    --shadow-sm: 0 1px 3px  rgba(0, 0, 0, .4);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, .5);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, .6);
+}
+
+/* ═══════════ MIDNIGHT ═══════════ */
+[data-theme="midnight"] {
+    color-scheme: dark;
+
+    --bg-1:     #020617;
+    --bg-2:     #0f172a;
+    --bg-3:     #1e293b;
+    --bg-4:     #334155;
+    --bg-hover: #1e293b;
+
+    --border:   #1e293b;
+    --border-l: #334155;
+
+    --tx-1: #f1f5f9;
+    --tx-2: #94a3b8;
+    --tx-3: #64748b;
+
+    --accent:   #6366f1;
+    --accent-h: #4f46e5;
+    --accent-g: rgba(99, 102, 241, .25);
+    --accent-s: rgba(99, 102, 241, .08);
+
+    --green:  #34d399;
+    --red:    #f87171;
+    --yellow: #fbbf24;
+    --blue:   #60a5fa;
+
+    --shadow-sm: 0 1px 3px  rgba(0, 0, 0, .5);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, .6);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, .7);
+}
+
+/* ═══════════ FOREST ═══════════ */
+[data-theme="forest"] {
+    color-scheme: dark;
+
+    --bg-1:     #022c22;
+    --bg-2:     #064e3b;
+    --bg-3:     #065f46;
+    --bg-4:     #047857;
+    --bg-hover: #047857;
+
+    --border:   #065f46;
+    --border-l: #059669;
+
+    --tx-1: #ecfdf5;
+    --tx-2: #a7f3d0;
+    --tx-3: #6ee7b7;
+
+    --accent:   #34d399;
+    --accent-h: #10b981;
+    --accent-g: rgba(52, 211, 153, .25);
+    --accent-s: rgba(52, 211, 153, .08);
+
+    --green:  #6ee7b7;
+    --red:    #fca5a5;
+    --yellow: #fde68a;
+    --blue:   #93c5fd;
+
+    --shadow-sm: 0 1px 3px  rgba(2, 44, 34, .5);
+    --shadow-md: 0 4px 12px rgba(2, 44, 34, .6);
+    --shadow-lg: 0 8px 32px rgba(2, 44, 34, .7);
+}
+
+/* ═══════════ SUNSET ═══════════ */
+[data-theme="sunset"] {
+    color-scheme: dark;
+
+    --bg-1:     #1c1017;
+    --bg-2:     #2d1a24;
+    --bg-3:     #3d2432;
+    --bg-4:     #4d2e40;
+    --bg-hover: #4d2e40;
+
+    --border:   #3d2432;
+    --border-l: #5d3850;
+
+    --tx-1: #fdf2f8;
+    --tx-2: #f9a8d4;
+    --tx-3: #ec4899;
+
+    --accent:   #f472b6;
+    --accent-h: #ec4899;
+    --accent-g: rgba(244, 114, 182, .25);
+    --accent-s: rgba(244, 114, 182, .08);
+
+    --green:  #86efac;
+    --red:    #fca5a5;
+    --yellow: #fde68a;
+    --blue:   #93c5fd;
+
+    --shadow-sm: 0 1px 3px  rgba(28, 16, 23, .5);
+    --shadow-md: 0 4px 12px rgba(28, 16, 23, .6);
+    --shadow-lg: 0 8px 32px rgba(28, 16, 23, .7);
+}
+
+/* ═══════════ OCEAN ═══════════ */
+[data-theme="ocean"] {
+    color-scheme: dark;
+
+    --bg-1:     #0c1222;
+    --bg-2:     #131d35;
+    --bg-3:     #1a2847;
+    --bg-4:     #21335a;
+    --bg-hover: #21335a;
+
+    --border:   #1a2847;
+    --border-l: #2a3d6b;
+
+    --tx-1: #e0f2fe;
+    --tx-2: #7dd3fc;
+    --tx-3: #38bdf8;
+
+    --accent:   #38bdf8;
+    --accent-h: #0ea5e9;
+    --accent-g: rgba(56, 189, 248, .25);
+    --accent-s: rgba(56, 189, 248, .08);
+
+    --green:  #86efac;
+    --red:    #fca5a5;
+    --yellow: #fde68a;
+    --blue:   #93c5fd;
+
+    --shadow-sm: 0 1px 3px  rgba(12, 18, 34, .5);
+    --shadow-md: 0 4px 12px rgba(12, 18, 34, .6);
+    --shadow-lg: 0 8px 32px rgba(12, 18, 34, .7);
+}
+
+/* ═══════════ LAVENDER ═══════════ */
+[data-theme="lavender"] {
+    color-scheme: dark;
+
+    --bg-1:     #1a1025;
+    --bg-2:     #231535;
+    --bg-3:     #2d1f45;
+    --bg-4:     #372955;
+    --bg-hover: #372955;
+
+    --border:   #2d1f45;
+    --border-l: #473368;
+
+    --tx-1: #f5f3ff;
+    --tx-2: #c4b5fd;
+    --tx-3: #a78bfa;
+
+    --accent:   #a78bfa;
+    --accent-h: #8b5cf6;
+    --accent-g: rgba(167, 139, 250, .25);
+    --accent-s: rgba(167, 139, 250, .08);
+
+    --green:  #86efac;
+    --red:    #fca5a5;
+    --yellow: #fde68a;
+    --blue:   #93c5fd;
+
+    --shadow-sm: 0 1px 3px  rgba(26, 16, 37, .5);
+    --shadow-md: 0 4px 12px rgba(26, 16, 37, .6);
+    --shadow-lg: 0 8px 32px rgba(26, 16, 37, .7);
+}
+
+/* ═══════════ LIGHT ═══════════ */
+[data-theme="light"] {
+    color-scheme: light;
+
+    --bg-1:     #ffffff;
+    --bg-2:     #f8f9fa;
+    --bg-3:     #e9ecef;
+    --bg-4:     #dee2e6;
+    --bg-hover: #e2e6ea;
+
+    --border:   #dee2e6;
+    --border-l: #ced4da;
+
+    --tx-1: #212529;
+    --tx-2: #495057;
+    --tx-3: #868e96;
+
+    --accent:   #7c3aed;
+    --accent-h: #6d28d9;
+    --accent-g: rgba(124, 58, 237, .15);
+    --accent-s: rgba(124, 58, 237, .06);
+
+    --green:  #059669;
+    --red:    #dc2626;
+    --yellow: #d97706;
+    --blue:   #2563eb;
+
+    /* Sombras mais sutis no tema claro */
+    --shadow-sm: 0 1px 3px  rgba(0, 0, 0, .08);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, .12);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, .16);
+}
+
+/* ═══════════ SCROLLBAR GLOBAL ═══════════ */
+
+/* Webkit (Chrome, Safari, Edge) */
+::-webkit-scrollbar       { width: 5px; height: 5px }
+::-webkit-scrollbar-track { background: transparent }
+::-webkit-scrollbar-thumb {
+    background: var(--border-l);
+    border-radius: 10px;
+    transition: background .15s;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--tx-3) }
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-l) transparent;
+}
+
+/* ═══════════ SELEÇÃO DE TEXTO ═══════════ */
+::selection {
+    background: var(--accent-g);
+    color: var(--tx-1);
+}
+
+/* ═══════════ FOCO ACESSÍVEL ═══════════ */
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
+/* Remove outline padrão quando não for teclado */
+:focus:not(:focus-visible) { outline: none }
+
+/* ═══════════ PREFERÊNCIA: TEMA DO SISTEMA ═══════════ */
+
+/*
+   Se o usuário não escolheu um tema explicitamente,
+   segue a preferência do sistema operacional.
+   O JS deve setar data-theme="dark" ou "light" no load,
+   então este bloco só atua como fallback.
+*/
+@media (prefers-color-scheme: light) {
+    :root:not([data-theme]) {
+        --bg-1:     #ffffff;
+        --bg-2:     #f8f9fa;
+        --bg-3:     #e9ecef;
+        --bg-4:     #dee2e6;
+        --bg-hover: #e2e6ea;
+        --border:   #dee2e6;
+        --border-l: #ced4da;
+        --tx-1: #212529;
+        --tx-2: #495057;
+        --tx-3: #868e96;
+        --accent:   #7c3aed;
+        --accent-h: #6d28d9;
+        --accent-g: rgba(124, 58, 237, .15);
+        --accent-s: rgba(124, 58, 237, .06);
+        --green:  #059669;
+        --red:    #dc2626;
+        --yellow: #d97706;
+        --blue:   #2563eb;
+        --shadow-sm: 0 1px 3px  rgba(0, 0, 0, .08);
+        --shadow-md: 0 4px 12px rgba(0, 0, 0, .12);
+        --shadow-lg: 0 8px 32px rgba(0, 0, 0, .16);
+    }
+}
+
+/* ═══════════ PREFERÊNCIA: MENOS ANIMAÇÃO ═══════════ */
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --theme-transition: none;
+        --duration-fast:   0s;
+        --duration-normal: 0s;
+        --duration-slow:   0s;
+    }
+
+    *, *::before, *::after {
+        transition: none !important;
+        animation:  none !important;
+    }
+}

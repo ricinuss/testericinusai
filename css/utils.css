@@ -1,0 +1,447 @@
+/* ═══════════ UTILS ═══════════
+   Componentes globais reutilizáveis:
+   badges, toasts, scroll, e utilitários
+   de acessibilidade e layout.
+   ══════════════════════════════ */
+
+/* ═══════════ SCROLLBAR ═══════════
+   Webkit já definido em themes.css.
+   Este bloco cobre casos onde a
+   especificidade precisa ser maior.
+   ══════════════════════════════ */
+
+/* Garante scrollbar fina em contêineres específicos */
+.s-list,
+.m-body,
+.chat-wrap,
+.modal {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-l) transparent;
+}
+
+/* ═══════════ BADGE ═══════════ */
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 7px;
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 500;
+    transition:
+        background .2s var(--ease-out),
+        color      .2s var(--ease-out);
+}
+
+.badge.on {
+    background: color-mix(in srgb, var(--green) 12%, transparent);
+    color: var(--green);
+}
+
+.badge.off {
+    background: color-mix(in srgb, var(--red) 12%, transparent);
+    color: var(--red);
+}
+
+.badge-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+    /* Pulso sutil para indicar status ativo */
+    animation: dotPulse 2.4s ease-in-out infinite;
+}
+
+.badge.off .badge-dot {
+    animation: none;
+}
+
+@keyframes dotPulse {
+    0%, 100% { opacity: 1;   transform: scale(1)    }
+    50%       { opacity: .45; transform: scale(.75)  }
+}
+
+/* ═══════════ TOAST ═══════════ */
+
+.toast-box {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    /* Permite clicar "através" do container quando vazio */
+    pointer-events: none;
+}
+
+.toast {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--tx-1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 320px;
+    min-width: 180px;
+    pointer-events: auto;
+    cursor: default;
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, .3),
+        0 1px 4px  rgba(0, 0, 0, .2),
+        0 0 0 1px  rgba(255, 255, 255, .04);
+
+    /* Entra da direita com spring */
+    animation:
+        toastIn  .3s  var(--ease-out, cubic-bezier(.22, 1, .36, 1)) both,
+        toastOut .25s var(--ease-out, cubic-bezier(.22, 1, .36, 1)) 2.75s forwards;
+}
+
+/* Barra de progresso de duração */
+.toast::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    width: 100%;
+    background: var(--accent);
+    border-radius: 0 0 10px 10px;
+    transform-origin: left;
+    animation: toastProgress 3s linear both;
+    opacity: .5;
+}
+
+/* Precisa de position para o ::after funcionar */
+.toast { position: relative; overflow: hidden }
+
+@keyframes toastIn {
+    from {
+        opacity: 0;
+        transform: translateX(20px) scale(.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+@keyframes toastOut {
+    to {
+        opacity: 0;
+        transform: translateX(20px) scale(.95);
+    }
+}
+
+@keyframes toastProgress {
+    from { transform: scaleX(1) }
+    to   { transform: scaleX(0) }
+}
+
+/* Ícone do toast não encolhe */
+.toast > span:first-child {
+    flex-shrink: 0;
+    font-size: 14px;
+    line-height: 1;
+}
+
+/* ═══════════ SKIP LINK (acessibilidade) ═══════════ */
+
+.skip-link {
+    position: fixed;
+    top: -100%;
+    left: 16px;
+    z-index: 9999;
+    padding: 8px 16px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: var(--radius-md, 8px);
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: top .15s;
+}
+
+.skip-link:focus { top: 16px }
+
+/* ═══════════ UTILITÁRIOS DE LAYOUT ═══════════ */
+
+/* Oculto visualmente mas acessível a screen readers */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Trunca texto com reticências */
+.truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Centraliza com flexbox */
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ═══════════ ESTADOS DE CARREGAMENTO ═══════════ */
+
+/* Skeleton loader genérico */
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--bg-3)   25%,
+        var(--bg-4)   50%,
+        var(--bg-3)   75%
+    );
+    background-size: 200% 100%;
+    border-radius: var(--radius-sm, 4px);
+    animation: shimmer 1.6s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    from { background-position: 200% 0 }
+    to   { background-position: -200% 0 }
+}
+
+/* ═══════════ RESPONSIVE ═══════════ */
+
+@media (max-width: 768px) {
+    .toast-box {
+        top: auto;
+        bottom: 80px;   /* acima da área de input mobile */
+        right: 12px;
+        left: 12px;
+    }
+
+    .toast {
+        max-width: 100%;
+        font-size: 11px;
+    }
+}
+
+/* ═══════════ PREFERÊNCIA: MENOS ANIMAÇÃO ═══════════
+   themes.css já zera --duration-* e --theme-transition.
+   Aqui cobrimos animações que usam valores hardcoded.
+   ══════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+    .toast {
+        animation:
+            toastIn  .1s linear both,
+            toastOut .1s linear 2.9s forwards;
+    }
+
+    .toast::after  { animation: none; display: none }
+    .badge-dot     { animation: none }
+    .skeleton      { animation: none; background: var(--bg-3) }
+}
+
+/* ═══════════ CUSTOM DIALOGS ═══════════ */
+
+.dialog-bg {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 2500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .22s cubic-bezier(.22, 1, .36, 1);
+}
+
+.dialog-bg.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.dialog {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 92%;
+    max-width: 400px;
+    box-shadow:
+        0 24px 48px rgba(0, 0, 0, .35),
+        0 8px 16px  rgba(0, 0, 0, .2),
+        0 0 0 1px   rgba(255, 255, 255, .04);
+    transform: translateY(12px) scale(.97);
+    opacity: 0;
+    transition:
+        transform .3s cubic-bezier(.22, 1, .36, 1),
+        opacity   .22s cubic-bezier(.22, 1, .36, 1);
+}
+
+.dialog-bg.show .dialog {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+.dialog-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.dialog-msg {
+    font-size: 14px;
+    color: var(--tx-1);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.dialog-input {
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--tx-1);
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    width: 100%;
+    transition:
+        border-color .15s,
+        background   .15s,
+        box-shadow   .15s;
+}
+
+.dialog-input:focus {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 4%, var(--bg-3));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.dialog-input::placeholder {
+    color: var(--tx-3);
+}
+
+.dialog-footer {
+    padding: 12px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    background: var(--bg-2);
+    border-radius: 0 0 12px 12px;
+}
+
+.dialog-btn {
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    transition:
+        background .15s,
+        color      .15s,
+        transform  .2s cubic-bezier(.34, 1.56, .64, 1),
+        box-shadow .15s;
+}
+
+.dialog-btn:hover {
+    transform: translateY(-1px);
+}
+
+.dialog-btn:active {
+    transform: translateY(0) scale(.96);
+    transition-duration: .07s;
+}
+
+.dialog-btn-secondary {
+    background: var(--bg-3);
+    color: var(--tx-2);
+    border: 1px solid var(--border);
+}
+
+.dialog-btn-secondary:hover {
+    background: var(--bg-hover);
+    color: var(--tx-1);
+}
+
+.dialog-btn-primary {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.dialog-btn-primary:hover {
+    background: var(--accent-h, var(--accent));
+    box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 50%, transparent);
+}
+
+.dialog-btn-danger {
+    background: var(--red);
+    color: #fff;
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--red) 30%, transparent);
+}
+
+.dialog-btn-danger:hover {
+    background: #dc2626;
+    box-shadow: 0 4px 14px color-mix(in srgb, var(--red) 45%, transparent);
+}
+
+/* ─── Responsive ─────────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+    .dialog {
+        width: 94%;
+    }
+
+    .dialog-body {
+        padding: 16px;
+    }
+
+    .dialog-footer {
+        padding: 10px 16px;
+    }
+
+    .dialog-btn:hover {
+        transform: none;
+    }
+}
+
+/* ─── Preferência por menos animação ─────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+    .dialog-bg,
+    .dialog {
+        transition: opacity .1s;
+    }
+
+    .dialog {
+        transform: none !important;
+    }
+
+    .dialog-bg.show .dialog {
+        transform: none;
+    }
+
+    .dialog-btn {
+        transition: background .1s, color .1s;
+    }
+
+    .dialog-btn:hover,
+    .dialog-btn:active {
+        transform: none;
+    }
+}

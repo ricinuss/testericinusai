@@ -1,0 +1,332 @@
+/* ═══════════ INPUT AREA ═══════════ */
+
+.input-area {
+    padding: 12px;
+    display: flex;
+    justify-content: center;
+    background: var(--bg-1);
+    /* Sombra suave separando o input do chat */
+    box-shadow: 0 -1px 0 var(--border);
+}
+
+.input-wrap {
+    width: 100%;
+    max-width: 740px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* ─── Caixa de input ─────────────────────────────────────────────────────────── */
+
+.input-box {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 6px 10px;
+    transition:
+        border-color .2s,
+        box-shadow   .2s,
+        background   .2s;
+    will-change: box-shadow;
+}
+
+.input-box:focus-within {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 3%, var(--bg-2));
+    box-shadow:
+        0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent),
+        0 2px 12px color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+/* ─── Textarea ───────────────────────────────────────────────────────────────── */
+
+.input-box textarea {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--tx-1);
+    font-size: 13.5px;
+    line-height: 1.5;
+    resize: none;
+    outline: none;
+    min-height: 22px;
+    max-height: 180px;
+    padding: 5px 0;
+    font-family: inherit;
+    transition: color .15s;
+    overflow-y: hidden;
+    scrollbar-width: none;
+}
+
+.input-box textarea::-webkit-scrollbar {
+    display: none;
+}
+
+.input-box textarea::placeholder {
+    color: var(--tx-3);
+    transition: opacity .2s, transform .2s;
+}
+
+/* Placeholder some suavemente ao focar */
+.input-box:focus-within textarea::placeholder {
+    opacity: .4;
+    transform: translateX(3px);
+}
+
+/* ─── Botão de anexo ─────────────────────────────────────────────────────────── */
+
+.input-attach {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.btn-attach {
+    background: none;
+    border: none;
+    color: var(--tx-3);
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    transition:
+        color      .15s,
+        background .15s,
+        transform  .2s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.btn-attach:hover {
+    color: var(--tx-1);
+    background: var(--bg-hover);
+    transform: scale(1.12) rotate(-8deg);
+}
+
+.btn-attach:active {
+    transform: scale(.92);
+    transition-duration: .07s;
+}
+
+/* ─── Botão enviar / parar ───────────────────────────────────────────────────── */
+
+.btn-send {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition:
+        background .15s,
+        transform  .2s cubic-bezier(.34, 1.56, .64, 1),
+        box-shadow .15s,
+        opacity    .15s;
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.btn-send:not(:disabled):hover {
+    background: var(--accent-h, var(--accent));
+    transform: scale(1.1);
+    box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 50%, transparent);
+}
+
+.btn-send:not(:disabled):active {
+    transform: scale(.92);
+    transition-duration: .07s;
+}
+
+/* Estado desabilitado — sem sombra e cursor bloqueado */
+.btn-send:disabled {
+    background: var(--bg-3);
+    color: var(--tx-3);
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: .7;
+    transform: none;
+}
+
+/* Estado parar — troca para vermelho com transição */
+.btn-send.stop {
+    background: var(--red);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--red) 35%, transparent);
+    animation: stopPulse 1.8s ease-in-out infinite;
+}
+
+.btn-send.stop:hover {
+    background: #dc2626;
+    box-shadow: 0 4px 14px color-mix(in srgb, var(--red) 50%, transparent);
+    animation: none;
+}
+
+/* Pulso sutil enquanto gera — indica atividade */
+@keyframes stopPulse {
+    0%, 100% { box-shadow: 0 2px 8px  color-mix(in srgb, var(--red) 35%, transparent) }
+    50%       { box-shadow: 0 2px 18px color-mix(in srgb, var(--red) 60%, transparent) }
+}
+
+/* ─── Rodapé do input ────────────────────────────────────────────────────────── */
+
+.input-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 6px;
+    font-size: 10px;
+    color: var(--tx-3);
+    padding: 0 2px;
+    transition: color .2s;
+}
+
+/* Contagem de caracteres */
+.char-count {
+    font-family: 'SF Mono', monospace;
+    font-variant-numeric: tabular-nums;  /* evita salto de largura ao contar */
+    transition: color .2s;
+}
+
+.char-count.warn {
+    color: var(--yellow);
+    animation: warnPulse 2s ease-in-out infinite;
+}
+
+.char-count.over {
+    color: var(--red);
+    animation: warnPulse 1s ease-in-out infinite;
+}
+
+@keyframes warnPulse {
+    0%, 100% { opacity: 1   }
+    50%       { opacity: .55 }
+}
+
+/* ═══════════ PREVIEW DE ANEXOS ═══════════ */
+
+.attach-preview {
+    display: flex;
+    gap: 6px;
+    padding: 6px 2px;
+    flex-wrap: wrap;
+    /* Entrada suave ao aparecer — controlada via JS com display:flex */
+    animation: attachIn .22s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+@keyframes attachIn {
+    from {
+        opacity: 0;
+        transform: translateY(-6px) scale(.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.attach-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 11px;
+    color: var(--tx-2);
+    transition:
+        border-color .15s,
+        background   .15s,
+        transform    .2s cubic-bezier(.34, 1.56, .64, 1);
+    animation: attachItemIn .2s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+@keyframes attachItemIn {
+    from {
+        opacity: 0;
+        transform: scale(.85) translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.attach-item:hover {
+    border-color: color-mix(in srgb, var(--red) 50%, var(--border));
+    background: color-mix(in srgb, var(--red) 5%, var(--bg-3));
+}
+
+/* Botão de remover anexo */
+.attach-rm {
+    background: none;
+    border: none;
+    color: var(--tx-3);
+    cursor: pointer;
+    padding: 0 2px;
+    display: flex;
+    align-items: center;
+    border-radius: 3px;
+    transition:
+        color     .12s,
+        transform .15s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.attach-rm:hover {
+    color: var(--red);
+    transform: scale(1.2) rotate(8deg);
+}
+
+.attach-rm:active {
+    transform: scale(.85);
+    transition-duration: .06s;
+}
+
+/* ═══════════ RESPONSIVE ═══════════ */
+
+@media (max-width: 768px) {
+    .input-area { padding: 8px }
+
+    .input-box {
+        border-radius: 10px;
+        padding: 4px 8px;
+    }
+
+    .input-box textarea {
+        font-size: 13px;
+    }
+
+    .input-foot    { font-size: 9px }
+    .attach-preview { gap: 4px }
+    .attach-item   { font-size: 10px; padding: 2px 6px }
+
+    /* Spring nos botões menor em mobile para não parecer exagerado */
+    .btn-send:not(:disabled):hover,
+    .btn-attach:hover { transform: scale(1.06) }
+}
+
+/* Respeita preferência por menos animação */
+@media (prefers-reduced-motion: reduce) {
+    .input-box,
+    .btn-send,
+    .btn-attach,
+    .attach-item,
+    .attach-rm        { transition: background .1s, color .1s, border-color .1s }
+
+    .btn-send.stop,
+    .char-count.warn,
+    .char-count.over  { animation: none }
+
+    .attach-preview,
+    .attach-item       { animation: none }
+
+    .input-box:focus-within textarea::placeholder {
+        opacity: .4;
+        transform: none;
+    }
+}

@@ -1,0 +1,635 @@
+/* ═══════════ RESET & BASE ═══════════ */
+
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    height: 100%;
+    /* Scroll suave global para links âncora */
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg-1);
+    color: var(--tx-1);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* ═══════════ SIDEBAR ═══════════ */
+
+.sidebar {
+    width: 260px;
+    min-width: 260px;
+    height: 100vh;
+    background: var(--bg-2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    transition: transform .28s cubic-bezier(.22, 1, .36, 1);
+    z-index: 100;
+    will-change: transform;
+}
+
+.sidebar.hide {
+    transform: translateX(-100%);
+    position: absolute;
+    pointer-events: none;
+}
+
+/* ─── Cabeçalho da sidebar ───────────────────────────────────────────────────── */
+
+.s-head {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.s-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px;
+}
+
+.s-brand-icon {
+    width: 30px;
+    height: 30px;
+    background: linear-gradient(135deg, var(--accent), var(--green));
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 30%, transparent);
+    transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), box-shadow .2s;
+}
+
+.s-brand:hover .s-brand-icon {
+    transform: scale(1.1) rotate(-4deg);
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.s-brand-text {
+    font-size: 15px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ─── Botão novo chat ────────────────────────────────────────────────────────── */
+
+.btn-new {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px;
+    background: var(--bg-3);
+    border: 1px solid var(--border-l);
+    border-radius: 8px;
+    color: var(--tx-1);
+    font-size: 13px;
+    cursor: pointer;
+    transition:
+        border-color .15s,
+        background   .15s,
+        transform    .2s cubic-bezier(.34, 1.56, .64, 1),
+        box-shadow   .15s;
+}
+
+.btn-new:hover {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 8%, var(--bg-3));
+    transform: translateY(-1px);
+    box-shadow: 0 3px 12px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.btn-new:active {
+    transform: translateY(0) scale(.97);
+    transition-duration: .07s;
+}
+
+/* SVG do + gira levemente no hover */
+.btn-new svg {
+    transition: transform .25s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.btn-new:hover svg {
+    transform: rotate(90deg) scale(1.1);
+}
+
+/* ─── Busca ──────────────────────────────────────────────────────────────────── */
+
+.s-search {
+    padding: 0 12px 6px;
+    position: relative;
+}
+
+.s-search input {
+    width: 100%;
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 8px 6px 28px;
+    color: var(--tx-1);
+    font-size: 12px;
+    outline: none;
+    font-family: inherit;
+    transition:
+        border-color .15s,
+        background   .15s,
+        box-shadow   .15s;
+}
+
+.s-search input:focus {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 4%, var(--bg-3));
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+.s-search-icon {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--tx-3);
+    pointer-events: none;
+    transition: color .15s;
+}
+
+.s-search:focus-within .s-search-icon {
+    color: var(--accent);
+}
+
+/* ─── Lista de chats ─────────────────────────────────────────────────────────── */
+
+.s-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 6px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+}
+
+.s-group {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: var(--tx-3);
+    padding: 10px 8px 4px;
+    /* Entrada suave dos grupos ao renderizar */
+    animation: fadeIn .2s ease both;
+}
+
+.s-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--tx-2);
+    transition:
+        background .12s,
+        color      .12s,
+        transform  .18s cubic-bezier(.22, 1, .36, 1),
+        border-color .12s;
+    animation: slideInLeft .22s cubic-bezier(.22, 1, .36, 1) both;
+    will-change: transform;
+}
+
+.s-item:hover {
+    background: var(--bg-hover);
+    color: var(--tx-1);
+    transform: translateX(2px);
+}
+
+.s-item:active {
+    transform: translateX(1px) scale(.99);
+    transition-duration: .07s;
+}
+
+.s-item.act {
+    background: var(--bg-4);
+    color: var(--tx-1);
+    transform: translateX(2px);
+}
+
+.s-item.pinned {
+    border-left: 2px solid var(--accent);
+    padding-left: 6px;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ─── Ícones e texto do item ─────────────────────────────────────────────────── */
+
+.s-item-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    color: var(--tx-3);
+    transition: color .12s, transform .18s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.s-item:hover .s-item-icon,
+.s-item.act   .s-item-icon {
+    color: var(--accent);
+    transform: scale(1.1);
+}
+
+.s-item-text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.s-item-count {
+    font-size: 9px;
+    color: var(--tx-3);
+    min-width: 14px;
+    text-align: center;
+    transition: opacity .12s;
+}
+
+/* ─── Botões de ação do item ─────────────────────────────────────────────────── */
+
+.s-item-btns {
+    display: flex;
+    gap: 2px;
+    opacity: 0;
+    transform: translateX(4px);
+    transition:
+        opacity   .15s,
+        transform .18s cubic-bezier(.22, 1, .36, 1);
+    /* Ocupa espaço mesmo oculto para evitar layout shift */
+    pointer-events: none;
+}
+
+.s-item:hover .s-item-btns {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
+.s-item:hover .s-item-count {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.s-item-btn {
+    background: none;
+    border: none;
+    color: var(--tx-3);
+    cursor: pointer;
+    padding: 3px 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    transition:
+        color      .12s,
+        background .12s,
+        transform  .15s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.s-item-btn:hover {
+    color: var(--tx-1);
+    background: var(--bg-3);
+    transform: scale(1.15);
+}
+
+.s-item-btn:active {
+    transform: scale(.9);
+    transition-duration: .06s;
+}
+
+.s-item-btn[data-action="del"]:hover {
+    color: var(--red);
+    background: color-mix(in srgb, var(--red) 10%, var(--bg-3));
+}
+
+/* ─── Empty state ────────────────────────────────────────────────────────────── */
+
+.s-empty {
+    text-align: center;
+    padding: 32px 20px;
+    color: var(--tx-3);
+    font-size: 12px;
+    animation: fadeIn .25s ease both;
+    line-height: 1.6;
+}
+
+/* ─── Rodapé da sidebar ──────────────────────────────────────────────────────── */
+
+.s-foot {
+    padding: 8px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.s-foot-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: var(--tx-2);
+    font-size: 12px;
+    width: 100%;
+    text-align: left;
+    transition:
+        background .12s,
+        color      .12s,
+        transform  .18s cubic-bezier(.22, 1, .36, 1);
+}
+
+.s-foot-btn:hover {
+    background: var(--bg-hover);
+    color: var(--tx-1);
+    transform: translateX(3px);
+}
+
+.s-foot-btn:active {
+    transform: translateX(1px);
+    transition-duration: .07s;
+}
+
+.s-foot-btn svg {
+    flex-shrink: 0;
+    transition: transform .2s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.s-foot-btn:hover svg {
+    transform: scale(1.15);
+}
+
+/* ─── Overlay mobile ─────────────────────────────────────────────────────────── */
+
+.s-overlay {
+    display: block;            /* sempre no DOM para animar */
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .5);
+    z-index: 90;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .28s cubic-bezier(.22, 1, .36, 1);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+}
+
+.s-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* ═══════════ MAIN ═══════════ */
+
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    min-width: 0;
+    /* Transição suave quando a sidebar abre/fecha */
+    transition: margin-left .28s cubic-bezier(.22, 1, .36, 1);
+}
+
+/* ─── Header ─────────────────────────────────────────────────────────────────── */
+
+.m-head {
+    height: 50px;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-2);
+    gap: 8px;
+    /* Sutil sombra inferior dando elevação ao header */
+    box-shadow: 0 1px 0 var(--border);
+}
+
+.m-head-l,
+.m-head-r {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ─── Botão ícone genérico ───────────────────────────────────────────────────── */
+
+.icon-btn {
+    background: none;
+    border: none;
+    color: var(--tx-2);
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+        background .12s,
+        color      .12s,
+        transform  .2s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.icon-btn:hover {
+    background: var(--bg-hover);
+    color: var(--tx-1);
+    transform: scale(1.1);
+}
+
+.icon-btn:active {
+    transform: scale(.92);
+    transition-duration: .07s;
+}
+
+/* Menu hamburguer: as linhas deslizam no hover */
+#btnMenu svg line {
+    transition: transform .2s cubic-bezier(.22, 1, .36, 1);
+    transform-origin: center;
+}
+
+#btnMenu:hover svg line:nth-child(1) { transform: translateX(2px) }
+#btnMenu:hover svg line:nth-child(3) { transform: translateX(-2px) }
+
+/* ─── Seletor de modelo ──────────────────────────────────────────────────────── */
+
+.sel-wrap {
+    position: relative;
+}
+
+.sel-wrap select {
+    appearance: none;
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--tx-1);
+    font-size: 12px;
+    padding: 5px 24px 5px 8px;
+    cursor: pointer;
+    outline: none;
+    font-family: inherit;
+    transition:
+        border-color .15s,
+        background   .15s,
+        box-shadow   .15s;
+}
+
+.sel-wrap select:focus,
+.sel-wrap select:hover {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 5%, var(--bg-3));
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.sel-wrap::after {
+    content: '▾';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 9px;
+    color: var(--tx-3);
+    pointer-events: none;
+    transition: color .15s;
+}
+
+.sel-wrap:hover::after {
+    color: var(--accent);
+}
+
+/* ═══════════ KEYFRAMES GLOBAIS ═══════════ */
+
+@keyframes fadeIn {
+    from { opacity: 0 }
+    to   { opacity: 1 }
+}
+
+/* ═══════════ RESPONSIVE ═══════════ */
+
+@media (max-width: 768px) {
+    body { flex-direction: column }
+
+    .sidebar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: auto;
+        width: 100vw;
+        min-width: unset;
+        height: auto;
+        max-height: 75vh;
+        border-right: none;
+        border-top: 1px solid var(--border);
+        /* Sobe de baixo com spring */
+        transform: translateY(100%);
+        transition: transform .3s cubic-bezier(.22, 1, .36, 1);
+        z-index: 200;
+        box-shadow: 0 -4px 24px rgba(0, 0, 0, .45);
+        border-radius: 16px 16px 0 0;
+        will-change: transform;
+    }
+
+    /* Alça visual no topo do drawer mobile */
+    .sidebar::before {
+        content: '';
+        display: block;
+        width: 36px;
+        height: 4px;
+        background: var(--border);
+        border-radius: 2px;
+        margin: 10px auto 0;
+        flex-shrink: 0;
+    }
+
+    .sidebar.hide {
+        transform: translateY(100%);
+        position: fixed;
+        pointer-events: none;
+    }
+
+    .sidebar:not(.hide) {
+        transform: translateY(0);
+        pointer-events: all;
+    }
+
+    .s-list {
+        max-height: 45vh;
+        overflow-y: auto;
+    }
+
+    .main {
+        height: 100vh;
+        width: 100vw;
+    }
+
+    .m-head {
+        padding: 0 8px;
+        height: 46px;
+    }
+
+    .sel-wrap select {
+        font-size: 11px;
+        max-width: 160px;
+    }
+
+    /* Em mobile itens da sidebar não deslizam (sem hover real) */
+    .s-item:hover      { transform: none }
+    .s-foot-btn:hover  { transform: none }
+    .s-item-btns       { opacity: 1; transform: none; pointer-events: auto }
+    .s-item-count      { display: none }
+}
+
+/* Respeita preferência por menos animação */
+@media (prefers-reduced-motion: reduce) {
+    .sidebar,
+    .s-overlay,
+    .main           { transition: none }
+
+    .s-item,
+    .s-foot-btn,
+    .btn-new,
+    .icon-btn,
+    .s-item-btn,
+    .s-item-btns    { transition: background .1s, color .1s; animation: none }
+
+    .s-brand-icon,
+    .btn-new svg,
+    .s-foot-btn svg { transition: none }
+
+    #btnMenu svg line { transition: none }
+}
